@@ -1,0 +1,25 @@
+{
+  "name": "graphql-utils",
+  "version": "0.1.0",
+  "description": "A test of graphql on a microservice architecture",
+  "main": "main.go",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nicolaiskogheim/go-kit-graphql-todo.git"
+  },
+  "author": "Nicolai Skogheim <nicolai.skogheim@gmail.com> (http://github.com/nicolaiskogheim)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nicolaiskogheim/go-kit-graphql-todo/issues"
+  },
+  "homepage": "https://github.com/nicolaiskogheim/go-kit-graphql-todo#readme",
+  "devDependencies": {
+    "child_process": "^1.0.2",
+    "clear": "0.0.1",
+    "gulp": "^3.9.1",
+    "gulp-util": "^3.0.8"
+  }
+}

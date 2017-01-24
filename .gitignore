@@ -1,0 +1,5 @@
+# The binary from go build
+go-kit-graphql-todo
+
+# Development dependencies
+node_modules
