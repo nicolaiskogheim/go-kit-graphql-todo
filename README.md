@@ -46,3 +46,5 @@ leaks where it shouldn't.
 - [graphql.org](http://graphql.org/learn/)
 - [opentracing.io](http://opentracing.io/documentation/)
 - [graphql-go](https://github.com/graphql-go/graphql)
+- [Microservice pattern](http://microservices.io/patterns/microservices.html)
+- [Hexagonal architecture](http://alistair.cockburn.us/Hexagonal+architecture)
