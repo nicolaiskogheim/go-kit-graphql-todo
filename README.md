@@ -3,9 +3,10 @@
 There was a list of technologies I wanted to use for a project, and this todo
 app is a test to see how that would work.
 
-This is just the server, but you can interact with it with Graphiql.  As I'm
-going to use Elm for the frontend in said project, there will soon be a client
-available in another repo for speaking with this server.
+This is just the server, but you can interact with it with
+[GraphiQL](https://github.com/graphql/graphiql).  As I'm going to use Elm for
+the frontend in said project, there will soon be a client available in another
+repo for speaking with this server.
 
 ### Contributing
 If you want to, in any way, contribute to this experiment, or if you have
