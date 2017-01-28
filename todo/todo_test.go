@@ -30,7 +30,7 @@ func TestTodo(t *testing.T) {
 		t.Fatalf("want %+v, have %+v", want, have)
 	}
 
-	t1.ToggleDone(done)
+	t1.ToggleDone()
 	if want, have := done, t1.Done; want != have {
 		t.Fatalf("want %+v, have %+v", want, have)
 	}

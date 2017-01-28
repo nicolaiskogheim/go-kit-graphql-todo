@@ -26,8 +26,8 @@ func (t *Todo) UpdateText(text TodoText) {
 	t.Text = text
 }
 
-func (t *Todo) ToggleDone(done TodoDone) {
-	t.Done = done
+func (t *Todo) ToggleDone() {
+	t.Done = !t.Done
 }
 
 func New(id TodoID, text TodoText, done TodoDone) *Todo {

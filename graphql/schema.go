@@ -108,6 +108,21 @@ func NewSchema(s todo.Service) (graphql.Schema, error) {
 						return t, err
 					},
 				},
+				"toggleTodo": &graphql.Field{
+					Type:        todoType,
+					Description: "Toggles the 'done' field of a todo",
+					Args: graphql.FieldConfigArgument{
+						"id": &graphql.ArgumentConfig{
+							Type: graphql.NewNonNull(graphql.String),
+						},
+					},
+					Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+						todoID := todo.TodoID(p.Args["id"].(string))
+						todo, err := s.Toggle(todoID)
+
+						return todo, err
+					},
+				},
 				"deleteTodo": &graphql.Field{
 					Type:        todoType,
 					Description: "Deletes the speciefied todo, or returns \"unknown todo\" if not found",

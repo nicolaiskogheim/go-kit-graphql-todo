@@ -20,6 +20,18 @@ func (r *todoRepository) Store(t *todo.Todo) error {
 	return nil
 }
 
+func (r *todoRepository) Update(t *todo.Todo) error {
+	r.mtx.Lock()
+	defer r.mtx.Unlock()
+
+	if _, ok := r.todos[t.ID]; ok {
+		return todo.ErrUnknown
+	}
+
+	r.todos[t.ID] = t
+	return nil
+}
+
 func (r *todoRepository) Delete(id todo.TodoID) (*todo.Todo, error) {
 	r.mtx.Lock()
 	defer r.mtx.Unlock()
