@@ -2,6 +2,7 @@ package graphql
 
 import (
 	"github.com/graphql-go/graphql"
+	"github.com/graphql-go/graphql/language/ast"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/todo"
 )
 
@@ -17,10 +18,35 @@ var todoType = graphql.NewObject(graphql.ObjectConfig{
 			Type: graphql.String,
 		},
 		"done": {
-			Type: graphql.Boolean,
+			Type: TodoDoneType,
 		},
 	},
 })
+
+// The other types on todo is handled correctly, but we need
+// to handle TodoBoolean, or else it will always evaluate to
+// false. See graphql.Boolean and their coerceBool for why
+// this is.
+var TodoDoneType = graphql.NewScalar(graphql.ScalarConfig{
+	Name:        "TodoBoolean",
+	Description: "The `TodoBoolean` scalar type represents `true` or `false`.",
+	Serialize:   coerceTodoBool,
+	ParseValue:  coerceTodoBool,
+	ParseLiteral: func(valueAST ast.Value) interface{} {
+		switch valueAST := valueAST.(type) {
+		case *ast.BooleanValue:
+			return valueAST.Value
+		}
+		return nil
+	},
+})
+
+func coerceTodoBool(value interface{}) interface{} {
+	if val, ok := value.(todo.TodoDone); ok {
+		return bool(val)
+	}
+	return false
+}
 
 // TODO(nicolai): Does the schemas belong in the services they administer?
 func NewSchema(s todo.Service) (graphql.Schema, error) {
