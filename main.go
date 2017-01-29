@@ -10,6 +10,9 @@ import (
 	"syscall"
 
 	"github.com/go-kit/kit/log"
+	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
+	stdprometheus "github.com/prometheus/client_golang/prometheus"
+
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/graphql"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/inmem"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/todo"
@@ -41,10 +44,31 @@ func main() {
 		todos = inmem.NewTodoRepository()
 	)
 
+	fieldKeys := []string{"method"}
+
+	var todoService todo.Service
+	{
+		todoService = todo.NewService(todos)
+		// TODO: logging
+		todoService = todo.NewInstrumentingService(
+			kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
+				Namespace: "api",
+				Subsystem: "todo_service",
+				Name:      "request_count",
+				Help:      "Number of requests received.",
+			}, fieldKeys),
+			kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
+				Namespace: "api",
+				Subsystem: "todo_service",
+				Name:      "request_latency_microseconds",
+				Help:      "Total duration of requests in microseconds.",
+			}, fieldKeys),
+			todoService,
+		)
+	}
+
 	var gqls graphql.Service
 	{
-		var todoService todo.Service
-		todoService = todo.NewService(todos)
 		schema, err := graphql.NewSchema(todoService)
 		if err != nil {
 			logger.Log("error", err)
@@ -52,12 +76,30 @@ func main() {
 		}
 		gqls = graphql.NewService(schema)
 		gqls = graphql.NewLoggingService(logger, gqls)
+		gqls = graphql.NewInstrumentingService(
+			kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
+				Namespace: "api",
+				Subsystem: "graphql_service",
+				Name:      "request_count",
+				Help:      "Number of requests received.",
+			}, fieldKeys),
+			kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
+				Namespace: "api",
+				Subsystem: "graphql_service",
+				Name:      "request_latency_microseconds",
+				Help:      "Total duration of requests in microseconds.",
+			}, fieldKeys),
+			gqls,
+		)
 	}
 
 	httpLogger := log.NewContext(logger).With("component", "http")
 
 	mux := http.NewServeMux()
 	mux.Handle("/graphql", graphql.MakeHandler(ctx, gqls, httpLogger))
+
+	http.Handle("/", accessControl(mux))
+	http.Handle("/metrics", stdprometheus.Handler())
 
 	errc := make(chan error, 2)
 	go func() {
@@ -70,10 +112,24 @@ func main() {
 
 	go func() {
 		logger.Log("transport", "http", "address", httpAddr, "msg", "listening")
-		errc <- http.ListenAndServe(*httpAddr, mux)
+		errc <- http.ListenAndServe(*httpAddr, nil)
 	}()
 
 	logger.Log("terminated", <-errc)
+}
+
+func accessControl(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type")
+
+		if r.Method == "OPTIONS" {
+			return
+		}
+
+		h.ServeHTTP(w, r)
+	})
 }
 
 func envString(varName, fallback string) string {

@@ -17,7 +17,7 @@ questions about anything, feel free to open issues or PR's.
 - [x] graphql
 - [ ] paging of todos
 - [x] logging (go-kit)
-- [ ] instrumenting (prometheus)
+- [x] instrumenting (prometheus)
 - [ ] opentracing (with appdash)
 - [ ] JWT for authentication
 - [ ] authorisation somehow, somewhere
