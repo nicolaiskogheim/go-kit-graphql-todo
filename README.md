@@ -21,7 +21,6 @@ questions about anything, feel free to open issues or PR's.
 - [ ] opentracing (with appdash)
 - [ ] JWT for authentication
 - [ ] authorisation somehow, somewhere
-
 - [ ] Proxying?
 - [ ] Load balancing?
 - [ ] Circuit breaking?
