@@ -51,7 +51,7 @@ func main() {
 	var todoService todo.Service
 	{
 		todoService = todo.NewService(todos)
-		// TODO: logging
+		todoService = todo.NewLoggingService(logger, todoService)
 		todoService = todo.NewInstrumentingService(
 			kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
 				Namespace: "api",
