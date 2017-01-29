@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 
 	"github.com/go-kit/kit/log"
@@ -36,6 +37,7 @@ func main() {
 	var logger log.Logger
 	{
 		logger = log.NewLogfmtLogger(os.Stderr)
+		logger = &serializedLogger{Logger: logger}
 		logger = log.NewContext(logger).With("ts", log.DefaultTimestampUTC)
 		logger = log.NewContext(logger).With("caller", log.DefaultCaller)
 	}
@@ -138,4 +140,15 @@ func envString(varName, fallback string) string {
 		return fallback
 	}
 	return value
+}
+
+type serializedLogger struct {
+	mtx sync.Mutex
+	log.Logger
+}
+
+func (l *serializedLogger) Log(keyvals ...interface{}) error {
+	l.mtx.Lock()
+	defer l.mtx.Unlock()
+	return l.Logger.Log(keyvals...)
 }
