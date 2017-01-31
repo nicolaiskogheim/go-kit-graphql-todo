@@ -37,6 +37,14 @@ This is both to see if the architecture would allow it without making
 compromises, and to test whether abstractions are done properly, or if logic
 leaks where it shouldn't.
 
+### Running
+After installing dependencies with `go get .` in the project folder, run `npm
+install` and then `gulp` and you will have a server listening on
+`localhost:8080`. You can visit `localhost:8080/metrics` to see data from
+instrumenting. And by using something like
+[GraphiQL](https://github.com/graphql/graphiql), you can query the server on
+`localhost:8080/graphql`.
+
 ### Inspiration
 - [go-kit/kit](github.com/go-kit/kit) (shipping examle in particular)
 - [narqo/test-graphql](https://github.com/narqo/test-graphql)
