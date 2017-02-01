@@ -24,6 +24,7 @@ func (r *todoRepository) Update(t *todo.Todo) error {
 	r.mtx.Lock()
 	defer r.mtx.Unlock()
 
+	// TODO(nicolai): what the fuck
 	if _, ok := r.todos[t.ID]; ok {
 		return todo.ErrUnknown
 	}
