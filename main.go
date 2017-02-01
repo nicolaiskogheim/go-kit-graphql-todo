@@ -17,6 +17,7 @@ import (
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/graphql"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/inmem"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/todo"
+	"github.com/nicolaiskogheim/go-kit-graphql-todo/user"
 )
 
 const (
@@ -44,6 +45,7 @@ func main() {
 
 	var (
 		todos = inmem.NewTodoRepository()
+		users = inmem.NewUserRepository()
 	)
 
 	fieldKeys := []string{"method"}
@@ -69,9 +71,30 @@ func main() {
 		)
 	}
 
+	var userService user.Service
+	{
+		userService = user.NewService(users)
+		userService = user.NewLoggingService(logger, userService)
+		userService = user.NewInstrumentingService(
+			kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{
+				Namespace: "api",
+				Subsystem: "user_service",
+				Name:      "request_count",
+				Help:      "Number of requests received.",
+			}, fieldKeys),
+			kitprometheus.NewSummaryFrom(stdprometheus.SummaryOpts{
+				Namespace: "api",
+				Subsystem: "user_service",
+				Name:      "request_latency_microseconds",
+				Help:      "Total duration of requests in microseconds.",
+			}, fieldKeys),
+			userService,
+		)
+	}
+
 	var gqls graphql.Service
 	{
-		schema, err := graphql.NewSchema(todoService)
+		schema, err := graphql.NewSchema(todoService, userService)
 		if err != nil {
 			logger.Log("error", err)
 			os.Exit(1)

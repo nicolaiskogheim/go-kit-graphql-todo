@@ -4,6 +4,7 @@ import (
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/graphql/language/ast"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/todo"
+	"github.com/nicolaiskogheim/go-kit-graphql-todo/user"
 )
 
 // The schema for our Todo type
@@ -48,22 +49,37 @@ func coerceTodoBool(value interface{}) interface{} {
 	return false
 }
 
+var userType = graphql.NewObject(graphql.ObjectConfig{
+	Name: "User",
+	Fields: graphql.Fields{
+		"id": {
+			Type: graphql.String,
+		},
+		"name": {
+			Type: graphql.String,
+		},
+		"email": {
+			Type: graphql.String,
+		},
+	},
+})
+
 // TODO(nicolai): Does the schemas belong in the services they administer?
-func NewSchema(s todo.Service) (graphql.Schema, error) {
+func NewSchema(ts todo.Service, us user.Service) (graphql.Schema, error) {
 
 	// TODO(nicolai): Run `gofmt -s` on this sometime
 	return graphql.NewSchema(graphql.SchemaConfig{
 
 		Query: graphql.NewObject(
 			graphql.ObjectConfig{
-				Name:        "TodosQuery",
-				Description: "Returns all todos",
+				Name:        "Query",
+				Description: "Query todos and users",
 				Fields: graphql.Fields{
 					"todos": &graphql.Field{
 						Type:        graphql.NewList(todoType),
 						Description: "List of todos",
 						Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-							return s.FindAll(), nil
+							return ts.FindAll(), nil
 						},
 					},
 					"todo": &graphql.Field{
@@ -76,7 +92,27 @@ func NewSchema(s todo.Service) (graphql.Schema, error) {
 						},
 						Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 							todoID := todo.TodoID(p.Args["id"].(string))
-							return s.Find(todoID)
+							return ts.Find(todoID)
+						},
+					},
+					"users": &graphql.Field{
+						Type:        graphql.NewList(userType),
+						Description: "List of users",
+						Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+							return us.FindAll(), nil
+						},
+					},
+					"user": &graphql.Field{
+						Type:        userType,
+						Description: "Find a user",
+						Args: graphql.FieldConfigArgument{
+							"id": &graphql.ArgumentConfig{
+								Type: graphql.NewNonNull(graphql.String),
+							},
+						},
+						Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+							id := user.UserID(p.Args["id"].(string))
+							return us.Find(id)
 						},
 					},
 				},
@@ -104,7 +140,7 @@ func NewSchema(s todo.Service) (graphql.Schema, error) {
 
 						id := todo.NextTodoID()
 						t := todo.New(id, todoText, todoDone)
-						err := s.Add(t)
+						err := ts.Add(t)
 						return t, err
 					},
 				},
@@ -118,7 +154,7 @@ func NewSchema(s todo.Service) (graphql.Schema, error) {
 					},
 					Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 						todoID := todo.TodoID(p.Args["id"].(string))
-						todo, err := s.Toggle(todoID)
+						todo, err := ts.Toggle(todoID)
 
 						return todo, err
 					},
@@ -134,7 +170,32 @@ func NewSchema(s todo.Service) (graphql.Schema, error) {
 					Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 						todoID := todo.TodoID(p.Args["id"].(string))
 
-						return s.Remove(todoID)
+						return ts.Remove(todoID)
+					},
+				},
+				"addUser": &graphql.Field{
+					Type:        userType,
+					Description: "Add a user",
+					Args: graphql.FieldConfigArgument{
+						"name": &graphql.ArgumentConfig{
+							Type: graphql.NewNonNull(graphql.String),
+						},
+						"email": &graphql.ArgumentConfig{
+							Type: graphql.NewNonNull(graphql.String),
+						},
+						"password": &graphql.ArgumentConfig{
+							Type: graphql.NewNonNull(graphql.String),
+						},
+					},
+					Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+						name := user.UserName(p.Args["name"].(string))
+						email := user.UserEmail(p.Args["email"].(string))
+						password := user.UserPassword(p.Args["password"].(string))
+
+						// TODO(nicolai): do this through the service?
+						u := user.New(user.NextUserID(), name, email, password)
+						err := us.Add(u)
+						return u, err
 					},
 				},
 			},
