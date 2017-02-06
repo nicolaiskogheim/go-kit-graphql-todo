@@ -12,7 +12,7 @@ import (
 	"github.com/graphql-go/handler"
 	// kittracing "github.com/go-kit/kit/tracing/opentracing"
 	// "github.com/opentracing/opentracing-go"
-	"golang.org/x/net/context"
+	"context"
 )
 
 func MakeHandler(ctx context.Context, gqs Service, logger log.Logger) http.Handler {
