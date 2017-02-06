@@ -4,6 +4,7 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/nicolaiskogheim/go-kit-graphql-todo/user"
 	"github.com/pborman/uuid"
 )
 
@@ -17,9 +18,10 @@ type TodoText string
 type TodoDone bool
 
 type Todo struct {
-	ID   TodoID   `json:"id"`
-	Text TodoText `json:"text"`
-	Done TodoDone `json:"done"`
+	ID    TodoID      `json:"id"`
+	Text  TodoText    `json:"text"`
+	Done  TodoDone    `json:"done"`
+	Owner user.UserID `json:"owner"`
 }
 
 func (t *Todo) UpdateText(text TodoText) {
