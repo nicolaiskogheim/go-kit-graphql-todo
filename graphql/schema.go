@@ -2,7 +2,6 @@ package graphql
 
 import (
 	"github.com/graphql-go/graphql"
-	"github.com/graphql-go/graphql/language/ast"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/todo"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/user"
 )
@@ -18,36 +17,21 @@ var todoType = graphql.NewObject(graphql.ObjectConfig{
 		"text": {
 			Type: graphql.String,
 		},
+		// The other types on todo is handled correctly, but we need
+		// to handle TodoBoolean, or else it will always evaluate to
+		// false. See graphql.Boolean and their coerceBool for why
+		// this is.
 		"done": {
-			Type: TodoDoneType,
+			Type: graphql.Boolean,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				if t, ok := p.Source.(*todo.Todo); ok {
+					return bool(t.Done), nil
+				}
+				return nil, nil
+			},
 		},
 	},
 })
-
-// The other types on todo is handled correctly, but we need
-// to handle TodoBoolean, or else it will always evaluate to
-// false. See graphql.Boolean and their coerceBool for why
-// this is.
-var TodoDoneType = graphql.NewScalar(graphql.ScalarConfig{
-	Name:        "TodoBoolean",
-	Description: "The `TodoBoolean` scalar type represents `true` or `false`.",
-	Serialize:   coerceTodoBool,
-	ParseValue:  coerceTodoBool,
-	ParseLiteral: func(valueAST ast.Value) interface{} {
-		switch valueAST := valueAST.(type) {
-		case *ast.BooleanValue:
-			return valueAST.Value
-		}
-		return nil
-	},
-})
-
-func coerceTodoBool(value interface{}) interface{} {
-	if val, ok := value.(todo.TodoDone); ok {
-		return bool(val)
-	}
-	return false
-}
 
 var userType = graphql.NewObject(graphql.ObjectConfig{
 	Name: "User",
