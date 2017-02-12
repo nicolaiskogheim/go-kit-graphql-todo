@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/todo"
+	"github.com/nicolaiskogheim/go-kit-graphql-todo/user"
 )
 
 type todoRepository struct {
@@ -63,6 +64,20 @@ func (r *todoRepository) FindAll() []*todo.Todo {
 	todos := make([]*todo.Todo, 0, len(r.todos))
 	for _, val := range r.todos {
 		todos = append(todos, val)
+	}
+
+	return todos
+}
+
+func (r *todoRepository) FindByUserID(id user.UserID) []*todo.Todo {
+	r.mtx.RLock()
+	defer r.mtx.RUnlock()
+
+	todos := make([]*todo.Todo, 0, len(r.todos))
+	for _, val := range r.todos {
+		if val.OwnerID == id {
+			todos = append(todos, val)
+		}
 	}
 
 	return todos

@@ -18,10 +18,10 @@ type TodoText string
 type TodoDone bool
 
 type Todo struct {
-	ID    TodoID      `json:"id"`
-	Text  TodoText    `json:"text"`
-	Done  TodoDone    `json:"done"`
-	Owner user.UserID `json:"owner"`
+	ID      TodoID      `json:"id"`
+	Text    TodoText    `json:"text"`
+	Done    TodoDone    `json:"done"`
+	OwnerID user.UserID `json:"owner_id"`
 }
 
 func (t *Todo) UpdateText(text TodoText) {
@@ -32,11 +32,12 @@ func (t *Todo) ToggleDone() {
 	t.Done = !t.Done
 }
 
-func New(id TodoID, text TodoText, done TodoDone) *Todo {
+func New(id TodoID, text TodoText, done TodoDone, owner_id user.UserID) *Todo {
 	return &Todo{
-		ID:   id,
-		Text: text,
-		Done: done,
+		ID:      id,
+		Text:    text,
+		Done:    done,
+		OwnerID: owner_id,
 	}
 }
 

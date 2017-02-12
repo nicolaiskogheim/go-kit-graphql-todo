@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/go-kit/kit/metrics"
+	"github.com/nicolaiskogheim/go-kit-graphql-todo/user"
 )
 
 type instrumentingService struct {
@@ -63,4 +64,13 @@ func (s *instrumentingService) Find(id TodoID) (*Todo, error) {
 	}(time.Now())
 
 	return s.Service.Find(id)
+}
+
+func (s *instrumentingService) FindByUserID(id user.UserID) []*Todo {
+	defer func(begin time.Time) {
+		s.requestCount.With("method", "find_by_user_id").Add(1)
+		s.requestLatency.With("method", "find_by_user_id").Observe(time.Since(begin).Seconds())
+	}(time.Now())
+
+	return s.Service.FindByUserID(id)
 }

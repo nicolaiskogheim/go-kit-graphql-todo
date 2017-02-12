@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/go-kit/kit/log"
+	"github.com/nicolaiskogheim/go-kit-graphql-todo/user"
 )
 
 type loggingService struct {
@@ -25,6 +26,7 @@ func (s *loggingService) Add(t *Todo) (err error) {
 			"id", t.ID,
 			"text", t.Text,
 			"done", t.Done,
+			"owner_id", t.OwnerID,
 			"took", time.Since(begin),
 			"error", err,
 		)
@@ -81,4 +83,15 @@ func (s *loggingService) FindAll() []*Todo {
 	}(time.Now())
 
 	return s.Service.FindAll()
+}
+
+func (s *loggingService) FindByUserID(id user.UserID) []*Todo {
+	defer func(begin time.Time) {
+		s.logger.Log(
+			"method", "find_by_user_id",
+			"took", time.Since(begin),
+		)
+	}(time.Now())
+
+	return s.Service.FindByUserID(id)
 }

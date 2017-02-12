@@ -1,11 +1,14 @@
 package todo
 
+import "github.com/nicolaiskogheim/go-kit-graphql-todo/user"
+
 type Service interface {
 	Add(t *Todo) error
 	Toggle(id TodoID) (*Todo, error)
 	Remove(id TodoID) (*Todo, error)
 	FindAll() []*Todo
 	Find(id TodoID) (*Todo, error)
+	FindByUserID(id user.UserID) []*Todo
 }
 
 type service struct {
@@ -47,10 +50,15 @@ func (s *service) FindAll() []*Todo {
 	return s.repository.FindAll()
 }
 
+func (s *service) FindByUserID(id user.UserID) []*Todo {
+	return s.repository.FindByUserID(id)
+}
+
 type TodoRepository interface {
 	Store(t *Todo) error
 	Update(t *Todo) error
 	Delete(id TodoID) (*Todo, error)
 	Find(id TodoID) (*Todo, error)
 	FindAll() []*Todo
+	FindByUserID(id user.UserID) []*Todo
 }

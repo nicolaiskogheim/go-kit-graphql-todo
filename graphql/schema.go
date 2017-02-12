@@ -30,6 +30,16 @@ var todoType = graphql.NewObject(graphql.ObjectConfig{
 				return nil, nil
 			},
 		},
+		"owner": {
+			Type: userType,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				// TODO(nicolai): how the fuck do we get user.Service
+				// in here?
+				// u, err := us.Find(user.UserID(p.Source.OwnerID.(string)))
+				// return u, err
+				return nil, nil
+			},
+		},
 	},
 })
 
@@ -63,6 +73,7 @@ func NewSchema(ts todo.Service, us user.Service) (graphql.Schema, error) {
 						Type:        graphql.NewList(todoType),
 						Description: "List of todos",
 						Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+
 							return ts.FindAll(), nil
 						},
 					},
@@ -76,7 +87,24 @@ func NewSchema(ts todo.Service, us user.Service) (graphql.Schema, error) {
 						},
 						Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 							todoID := todo.TodoID(p.Args["id"].(string))
-							return ts.Find(todoID)
+							t, err := ts.Find(todoID)
+							if err != nil {
+								return nil, err
+							}
+
+							u, err := us.Find(t.OwnerID)
+							if err != nil {
+								return t, user.ErrUnknown
+							}
+
+							todoWithUser := struct {
+								ID    todo.TodoID   `json:"id"`
+								Text  todo.TodoText `json:"text"`
+								Done  todo.TodoDone `json:"done"`
+								Owner user.User     `json:"owner"`
+							}{t.ID, t.Text, t.Done, *u}
+
+							return todoWithUser, nil
 						},
 					},
 					"users": &graphql.Field{
@@ -117,13 +145,17 @@ func NewSchema(ts todo.Service, us user.Service) (graphql.Schema, error) {
 							Type:         graphql.Boolean,
 							DefaultValue: false,
 						},
+						"owner_id": &graphql.ArgumentConfig{
+							Type: graphql.String,
+						},
 					},
 					Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 						todoText := todo.TodoText(p.Args["text"].(string))
 						todoDone := todo.TodoDone(p.Args["done"].(bool))
+						todoOwnerID := user.UserID(p.Args["owner_id"].(string))
 
 						id := todo.NextTodoID()
-						t := todo.New(id, todoText, todoDone)
+						t := todo.New(id, todoText, todoDone, todoOwnerID)
 						err := ts.Add(t)
 						return t, err
 					},
