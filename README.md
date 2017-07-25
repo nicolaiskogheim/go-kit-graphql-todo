@@ -19,7 +19,7 @@ questions about anything, feel free to open issues or PR's.
 - [x] logging (go-kit)
 - [x] instrumenting (prometheus)
 - [ ] opentracing (with appdash)
-- [ ] JWT for authentication
+- [ ] client authentication
 - [ ] authorisation somehow, somewhere
 - [ ] Proxying?
 - [ ] Load balancing?
