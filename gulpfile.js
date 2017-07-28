@@ -4,8 +4,9 @@
 var gulp = require('gulp')
     , clear = require('clear')
     , exec = require('child_process').exec
-    , spawn = require('child_process').spawn
     , gutil = require('gulp-util')
+    , runSequence = require('run-sequence')
+    , spawn = require('child_process').spawn
     , counter = 0
     , node = null
     ;
@@ -14,10 +15,16 @@ var build = 'go build';
 var generate = 'go generate';
 var run = './go-kit-graphql-todo';
 
-gulp.task('default', ['generate', 'build', 'run', 'watch']);
+// gulp.task('default', ['generate', 'build', 'run', 'watch']);
+gulp.task('default', function(cb) {
+    runSequence('generate',
+                'run',
+                'watch',
+                cb);
+});
 
 gulp.task('watch', function() {
-    gulp.watch('**/*.go', ['clear', 'build', 'run']);
+    gulp.watch('**/*.go', ['clear', 'run'])
     // We don't need to run 'build' after generate.
     // If any *.go files are added/updated then 'build'
     // will trigger anyway

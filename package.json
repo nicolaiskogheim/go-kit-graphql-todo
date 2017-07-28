@@ -20,6 +20,7 @@
     "child_process": "^1.0.2",
     "clear": "0.0.1",
     "gulp": "^3.9.1",
-    "gulp-util": "^3.0.8"
+    "gulp-util": "^3.0.8",
+    "run-sequence": "^2.1.0"
   }
 }
