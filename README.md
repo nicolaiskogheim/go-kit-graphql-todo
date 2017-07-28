@@ -4,9 +4,10 @@ There was a list of technologies I wanted to use for a project, and this todo
 app is a test to see how that would work.
 
 This is just the server, but you can interact with it with
-[GraphiQL](https://github.com/graphql/graphiql).  As I'm going to use Elm for
-the frontend in said project, there will soon(-ish) be a client available in another
-repo for speaking with this server.
+[GraphiQL](https://github.com/graphql/graphiql), which is also served on
+`localhost:8080/`.  As I'm going to use Elm for the frontend in said project,
+there will soon(-ish) be a client available in another repo for speaking with
+this server.
 
 ### Contributing
 If you want to, in any way, contribute to this experiment, or if you have
@@ -38,12 +39,17 @@ compromises, and to test whether abstractions are done properly, or if logic
 leaks where it shouldn't. The REST stuff has low priority, though.
 
 ### Running
-After installing dependencies with `go get .` in the project folder, run `npm
-install` and then `gulp` and you will have a server listening on
-`localhost:8080`. You can visit `localhost:8080/metrics` to see data from
-instrumenting. And by using something like
-[GraphiQL](https://github.com/graphql/graphiql), you can query the server on
-`localhost:8080/graphql`.
+```
+$ cd $PROJECT_ROOT
+$ go get . # Install dependencies
+$ npm install # or `yarn`
+$ gulp
+```
+
+Visit `localhost:8080/` to interact with the server through GraphiQL.
+You can visit `localhost:8080/metrics` to see data from
+instrumentation.
+Use `localhost:8080/graphql` if you need to speak directly with the GraphQL API.
 
 ### Inspiration
 - [go-kit/kit](github.com/go-kit/kit) (shipping examle in particular)
@@ -53,5 +59,6 @@ instrumenting. And by using something like
 - [graphql.org](http://graphql.org/learn/)
 - [opentracing.io](http://opentracing.io/documentation/)
 - [graphql-go](https://github.com/graphql-go/graphql)
+- [granate](https://github.com/granateio/granate)
 - [Microservice pattern](http://microservices.io/patterns/microservices.html)
 - [Hexagonal architecture](http://alistair.cockburn.us/Hexagonal+architecture)
