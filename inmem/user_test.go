@@ -26,24 +26,24 @@ func TestInmem(t *testing.T) {
 	}
 
 	if want, have := u.ID, user.ID; want != have {
-		t.Fatal("want %+v, have %+v", want, have)
+		t.Fatalf("want %+v, have %+v", want, have)
 	}
 
 	if want, have := u.Name, user.Name; want != have {
-		t.Fatal("want %+v, have %+v", want, have)
+		t.Fatalf("want %+v, have %+v", want, have)
 	}
 
 	if want, have := u.Email, user.Email; want != have {
-		t.Fatal("want %+v, have %+v", want, have)
+		t.Fatalf("want %+v, have %+v", want, have)
 	}
 
 	if want, have := u.Password, user.Password; want != have {
-		t.Fatal("want %+v, have %+v", want, have)
+		t.Fatalf("want %+v, have %+v", want, have)
 	}
 
 	us := r.FindAll()
 	if want, have := 1, len(r); want != have {
-		t.Fatal("repo should contain %d, but contains %d users", want, have)
+		t.Fatalf("repo should contain %d, but contains %d users", want, have)
 	}
 
 	err = tr.Delete(todo1.ID)
@@ -52,6 +52,6 @@ func TestInmem(t *testing.T) {
 	}
 
 	if want, have := 0, len(tr.FindAll()); want != have {
-		t.Fatal("repo should contain %d, but contains %d users", want, have)
+		t.Fatalf("repo should contain %d, but contains %d users", want, have)
 	}
 }
