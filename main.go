@@ -2,7 +2,6 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"net/http"
@@ -34,8 +33,6 @@ func main() {
 		// TODO(nicolai): This will be used with a /metrics endpoint
 		// debugPort = envString("DEBUG_PORT", defaultDebugPort)
 		httpAddr = flag.String("http.addr", ":"+port, "HTTP listen address")
-
-		ctx = context.Background()
 	)
 
 	var logger log.Logger
@@ -125,7 +122,7 @@ func main() {
 	httpLogger := log.NewContext(logger).With("component", "http")
 
 	mux := http.NewServeMux()
-	mux.Handle("/graphql", graphql.MakeHandler(ctx, gqls, httpLogger))
+	mux.Handle("/graphql", graphql.MakeHandler(gqls, httpLogger))
 	mux.Handle("/", http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		rw.Write(graphiql)
 	}))

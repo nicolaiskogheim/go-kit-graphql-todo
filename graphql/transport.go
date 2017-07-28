@@ -15,7 +15,7 @@ import (
 	"context"
 )
 
-func MakeHandler(ctx context.Context, gqs Service, logger log.Logger) http.Handler {
+func MakeHandler(gqs Service, logger log.Logger) http.Handler {
 	opts := []kithttp.ServerOption{
 		kithttp.ServerErrorLogger(logger),
 		kithttp.ServerErrorEncoder(encodeError),
@@ -31,7 +31,6 @@ func MakeHandler(ctx context.Context, gqs Service, logger log.Logger) http.Handl
 	}
 
 	graphqlHandler := kithttp.NewServer(
-		ctx,
 		graphqlEndpoint,
 		decodeGraphqlRequest,
 		encodeResponse,
