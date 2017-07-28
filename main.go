@@ -18,6 +18,7 @@ import (
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/inmem"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/models"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/schema"
+	"github.com/nicolaiskogheim/go-kit-graphql-todo/session"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/todo"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/user"
 )
@@ -46,8 +47,9 @@ func main() {
 	}
 
 	var (
-		todos = inmem.NewTodoRepository()
-		users = inmem.NewUserRepository()
+		todos    = inmem.NewTodoRepository()
+		users    = inmem.NewUserRepository()
+		sessions = inmem.NewSessionRepository()
 	)
 
 	fieldKeys := []string{"method"}
@@ -93,6 +95,12 @@ func main() {
 			userService,
 		)
 	}
+
+	var sessionService session.Service
+	{
+		sessionService = session.NewService(sessions)
+	}
+	_ = sessionService
 
 	var gqls graphql.Service
 	{
