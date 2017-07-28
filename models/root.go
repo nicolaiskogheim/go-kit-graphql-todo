@@ -23,7 +23,8 @@ func (root Root) TodosQuery(
 	var todos []schema.TodoInterface
 	for _, val := range root.TodoService.FindAll() {
 		todos = append(todos, Todo{
-			source: *val,
+			source:      *val,
+			UserService: root.UserService,
 		})
 	}
 	return todos, nil
@@ -41,7 +42,8 @@ func (root Root) TodoQuery(
 	}
 
 	t := Todo{
-		source: *todo,
+		source:      *todo,
+		UserService: root.UserService,
 	}
 
 	return t, nil
@@ -84,18 +86,21 @@ func (root Root) AddTodoMutation(
 	ctx context.Context,
 	text string,
 	done bool,
+	owner string,
 ) (schema.TodoInterface, error) {
 	todo := todo.New(
 		todo.NextTodoID(),
 		todo.TodoText(text),
 		todo.TodoDone(done),
+		user.UserID(owner),
 	)
 	err := root.TodoService.Add(todo)
 
 	if err != nil {
-
+		return nil, err
 	}
-	return Todo{source: *todo}, nil
+
+	return Todo{source: *todo, UserService: root.UserService}, nil
 }
 
 // ToggleTodoMutation resolves toggleTodo( id: ID! )
@@ -109,7 +114,7 @@ func (root Root) ToggleTodoMutation(
 		return nil, err
 	}
 
-	return Todo{source: *todo}, nil
+	return Todo{source: *todo, UserService: root.UserService}, nil
 }
 
 // DeleteTodoMutation resolves deleteTodo( id: ID! )
@@ -123,7 +128,7 @@ func (root Root) DeleteTodoMutation(
 		return nil, err
 	}
 
-	return Todo{source: *todo}, nil
+	return Todo{source: *todo, UserService: root.UserService}, nil
 }
 
 // AddUserMutation resolves addUser( name: String!, email: String!, password: String! )

@@ -1,6 +1,10 @@
 package todo
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/nicolaiskogheim/go-kit-graphql-todo/user"
+)
 
 var (
 	id      = TodoID("todo_id")
@@ -8,10 +12,11 @@ var (
 	text2   = TodoText("updated text")
 	notDone = TodoDone(false)
 	done    = TodoDone(true)
+	owner   = user.UserID(1)
 )
 
 func TestTodo(t *testing.T) {
-	t1 := New(id, text1, notDone)
+	t1 := New(id, text1, notDone, owner)
 
 	if want, have := id, t1.ID; want != have {
 		t.Fatalf("want %+v, have %+v", want, have)
