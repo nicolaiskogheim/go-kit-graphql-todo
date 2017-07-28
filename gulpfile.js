@@ -69,7 +69,7 @@ process.on('exit', function() {
 });
 
 function runCommand(cmd, cb) {
-    exec(build, function (err, stdout, stderr) {
+    exec(cmd, function (err, stdout, stderr) {
         if (err) {
             gutil.log(gutil.colors.red(cmd + ': '), gutil.colors.red(stderr));
             gutil.log(gutil.colors.red('NOT RESTARTING APP'));
