@@ -1,0 +1,20 @@
+# Programming language to output
+language: go
+
+# Output locations (and some options)
+output:
+  # Name of the package to generate
+  package: github.com/nicolaiskogheim/go-kit-graphql-todo
+
+  # Name of the package to generate for the schema
+  # These files doesn't need to be touched
+  schema: schema
+
+  # Name of the package to generate for the models
+  # These files needs to be filled in by us
+  models: models
+
+# Paths to schemas to use for code generation
+# Granate doesn't support multiple schemas yet.
+schemas:
+  - graphql/schema.graphql

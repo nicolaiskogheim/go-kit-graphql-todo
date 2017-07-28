@@ -1,3 +1,4 @@
+//go:generate granate
 package main
 
 import (
@@ -16,6 +17,8 @@ import (
 
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/graphql"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/inmem"
+	"github.com/nicolaiskogheim/go-kit-graphql-todo/models"
+	"github.com/nicolaiskogheim/go-kit-graphql-todo/schema"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/todo"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/user"
 )
@@ -94,12 +97,13 @@ func main() {
 
 	var gqls graphql.Service
 	{
-		schema, err := graphql.NewSchema(todoService, userService)
-		if err != nil {
-			logger.Log("error", err)
-			os.Exit(1)
-		}
-		gqls = graphql.NewService(schema)
+		root := models.Root{TodoService: todoService, UserService: userService}
+		schema.Init(schema.ProviderConfig{
+			Query:    root,
+			Mutation: root,
+		})
+
+		gqls = graphql.NewService(schema.Schema())
 		gqls = graphql.NewLoggingService(logger, gqls)
 		gqls = graphql.NewInstrumentingService(
 			kitprometheus.NewCounterFrom(stdprometheus.CounterOpts{

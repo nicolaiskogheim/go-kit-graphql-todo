@@ -14,9 +14,9 @@ type service struct {
 	schema graphql.Schema
 }
 
-func NewService(schema graphql.Schema) Service {
+func NewService(schema *graphql.Schema) Service {
 	return &service{
-		schema: schema,
+		schema: *schema,
 	}
 }
 

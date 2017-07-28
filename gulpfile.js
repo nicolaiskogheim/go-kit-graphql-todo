@@ -11,29 +11,32 @@ var gulp = require('gulp')
     ;
 
 var build = 'go build';
+var generate = 'go generate';
 var run = './go-kit-graphql-todo';
 
-gulp.task('default', ['build', 'run', 'watch']);
+gulp.task('default', ['generate', 'build', 'run', 'watch']);
 
 gulp.task('watch', function() {
-    gulp.watch('**/*.go', ['build']);
+    gulp.watch('**/*.go', ['clear', 'build', 'run']);
+    // We don't need to run 'build' after generate.
+    // If any *.go files are added/updated then 'build'
+    // will trigger anyway
+    // XXX(nicolaiskogheim): I don't know if this behaviour creates
+    //                       race conditions.
+    gulp.watch('**/*.graphql', ['clear', 'generate']);
+});
+
+gulp.task('clear', [], function (cb) {
+    clear();
+    cb();
 });
 
 gulp.task('build', [], function (cb) {
-    clear();
-    exec(build, function (err, stdout, stderr) {
-        if (err) {
-            gutil.log(gutil.colors.red('go build: '), gutil.colors.red(stderr));
-            gutil.log(gutil.colors.red('NOT RESTARTING APP'));
-        } else {
-            if (stdout) {
-                gutil.log(gutil.colors.green('go build: '), gutil.colors.green(stdout));
-            }
-            gutil.log(gutil.colors.green('RESTARTING APP'));
-            gulp.run('run');
-        }
-        cb();
-    });
+    runCommand(build, cb);
+});
+
+gulp.task('generate', [], function (cb) {
+    runCommand(generate, cb);
 });
 
 gulp.task('run', ['build'], function(cb) {
@@ -41,14 +44,13 @@ gulp.task('run', ['build'], function(cb) {
 
     if (node) {
         node.kill();
-
         // Delay this so we get 'Starting ...' after 'Server quit ...'
         setTimeout(function() {
             gutil.log(gutil.colors.cyan('Starting server.'));
         }, 5);
     }
-    node = spawn(run, [], {stdio: 'inherit'});
 
+    node = spawn(run, [], {stdio: 'inherit'});
     node.on('exit', function (code, signal) {
         gutil.log(gutil.colors.cyan('Server quit. Exit code: ', code, '. Signal: ', signal));
     });
@@ -60,4 +62,19 @@ gulp.task('run', ['build'], function(cb) {
 process.on('exit', function() {
     if (node) node.kill();
 });
+
+function runCommand(cmd, cb) {
+    exec(build, function (err, stdout, stderr) {
+        if (err) {
+            gutil.log(gutil.colors.red(cmd + ': '), gutil.colors.red(stderr));
+            gutil.log(gutil.colors.red('NOT RESTARTING APP'));
+        } else {
+            if (stdout) {
+                gutil.log(gutil.colors.green(cmd + ': '), gutil.colors.green(stdout));
+            }
+            gutil.log(gutil.colors.green('RESTARTING APP'));
+        }
+        cb();
+    });
+}
 
