@@ -27,7 +27,12 @@ gulp.task('watch', function() {
 });
 
 gulp.task('clear', [], function (cb) {
-    clear();
+    // The first 'generate' triggers 'build', but we don't want to clear the
+    // screen. This is because granate touches files even if there's nothing
+    // new.
+    if (counter != 0) {
+        clear();
+    }
     cb();
 });
 
