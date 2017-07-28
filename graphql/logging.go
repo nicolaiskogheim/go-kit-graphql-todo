@@ -33,11 +33,11 @@ func (s *loggingService) Do(ctx context.Context, request interface{}) (res *grap
 
 		s.logger.Log(
 			"method", "do",
-			"query", req.Query,
-			"variables", variables,
-			"operationName", req.OperationName,
 			"took", time.Since(begin),
 			"error", err,
+			"operationName", req.OperationName,
+			"variables", variables,
+			"query", req.Query,
 		)
 	}(time.Now())
 	res = s.Service.Do(ctx, request)
