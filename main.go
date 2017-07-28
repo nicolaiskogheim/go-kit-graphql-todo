@@ -39,8 +39,10 @@ func main() {
 	{
 		logger = log.NewLogfmtLogger(os.Stderr)
 		logger = &serializedLogger{Logger: logger}
-		logger = log.NewContext(logger).With("ts", log.DefaultTimestampUTC)
-		logger = log.NewContext(logger).With("caller", log.DefaultCaller)
+		logger = log.With(logger,
+			"ts", log.DefaultTimestampUTC,
+			"caller", log.DefaultCaller,
+		)
 	}
 
 	var (
@@ -119,7 +121,7 @@ func main() {
 		)
 	}
 
-	httpLogger := log.NewContext(logger).With("component", "http")
+	httpLogger := log.With(logger, "component", "http")
 
 	mux := http.NewServeMux()
 	mux.Handle("/graphql", graphql.MakeHandler(gqls, httpLogger))

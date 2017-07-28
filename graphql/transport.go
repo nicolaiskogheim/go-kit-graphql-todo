@@ -23,7 +23,7 @@ func MakeHandler(gqs Service, logger log.Logger) http.Handler {
 
 	var graphqlEndpoint endpoint.Endpoint
 	{
-		graphqlLogger := log.NewContext(logger).With("method", "graphql")
+		graphqlLogger := log.With(logger, "method", "graphql")
 
 		graphqlEndpoint = makeGraphqlEndpoint(gqs)
 		// graphqlEndpoint = kittracing.TracerServer(tracer, "graphql")(graphqlEndpoint)
