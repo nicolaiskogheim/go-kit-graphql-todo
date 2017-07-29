@@ -40,7 +40,7 @@ func (s *service) Authenticate(ctx context.Context, request *http.Request) conte
 		return ctx
 	}
 
-	sess, err := s.session.Get(cookie.Value)
+	sess, err := s.session.Get(session.SessionToken(cookie.Value))
 
 	if err != nil {
 		return ctx

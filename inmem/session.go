@@ -9,26 +9,26 @@ import (
 
 type sessionRepository struct {
 	mtx      sync.RWMutex
-	sessions map[session.SessionUID]session.SessionToken
+	sessions map[session.SessionToken]session.SessionUID
 }
 
 func (r *sessionRepository) Store(s *session.Session) error {
 	r.mtx.Lock()
 	defer r.mtx.Unlock()
 
-	r.sessions[s.UID] = s.Token
+	r.sessions[s.Token] = s.UID
 
 	return nil
 }
 
-func (r *sessionRepository) Find(uid session.SessionUID) (*session.Session, error) {
+func (r *sessionRepository) Find(token session.SessionToken) (*session.Session, error) {
 	r.mtx.RLock()
 	defer r.mtx.RUnlock()
 
-	if val, ok := r.sessions[uid]; ok {
+	if val, ok := r.sessions[token]; ok {
 		s := &session.Session{
-			UID:     uid,
-			Token:   val,
+			UID:     val,
+			Token:   token,
 			Expires: time.Now(),
 		}
 
@@ -40,10 +40,10 @@ func (r *sessionRepository) Find(uid session.SessionUID) (*session.Session, erro
 
 func NewSessionRepository() session.SessionRepository {
 	r := &sessionRepository{
-		sessions: make(map[session.SessionUID]session.SessionToken),
+		sessions: make(map[session.SessionToken]session.SessionUID),
 	}
 
-	r.sessions[session.Session1.UID] = session.Session1.Token
+	r.sessions[session.Session1.Token] = session.Session1.UID
 
 	return r
 }

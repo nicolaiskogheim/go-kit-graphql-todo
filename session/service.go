@@ -6,7 +6,7 @@ import (
 
 type Service interface {
 	Make(uid SessionUID, expires time.Time) (*SessionToken, error)
-	Get(token string) (*Session, error)
+	Get(token SessionToken) (*Session, error)
 }
 
 type service struct {
@@ -30,8 +30,8 @@ func (s *service) Make(uid SessionUID, expires time.Time) (*SessionToken, error)
 	return &session.Token, nil
 }
 
-func (s *service) Get(uid string) (*Session, error) {
-	session, err := s.repository.Find(SessionUID(uid))
+func (s *service) Get(token SessionToken) (*Session, error) {
+	session, err := s.repository.Find(SessionToken(token))
 
 	if err != nil {
 		return nil, err
@@ -41,6 +41,6 @@ func (s *service) Get(uid string) (*Session, error) {
 }
 
 type SessionRepository interface {
-	Find(uid SessionUID) (*Session, error)
+	Find(token SessionToken) (*Session, error)
 	Store(s *Session) error
 }

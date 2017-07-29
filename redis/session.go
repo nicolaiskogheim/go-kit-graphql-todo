@@ -12,15 +12,15 @@ type sessionRepository struct {
 	client redis.Client
 }
 
-func (r *sessionRepository) Find(uid session.SessionUID) (*session.Session, error) {
-	val, err := r.client.Get(uid.ToString()).Result()
+func (r *sessionRepository) Find(token session.SessionToken) (*session.Session, error) {
+	val, err := r.client.Get(token.ToString()).Result()
 
 	if err != nil {
 		return nil, err
 	}
 
-	s := session.Session{UID: uid,
-		Token:   session.SessionToken(val),
+	s := session.Session{UID: session.SessionUID(val),
+		Token:   token,
 		Expires: time.Now(),
 	}
 
