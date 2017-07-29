@@ -17,6 +17,7 @@ type Query {
     todo(id: ID!): Todo
     users: [User]
     user(id: ID): User
+    viewer: User
 }
 
 type Mutation {

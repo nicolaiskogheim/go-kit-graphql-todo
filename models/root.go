@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/nicolaiskogheim/go-kit-graphql-todo/auth"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/schema"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/todo"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/user"
@@ -147,6 +148,23 @@ func (root Root) AddUserMutation(
 
 	err := root.UserService.Add(user)
 
+	if err != nil {
+		return nil, err
+	}
+
+	return User{source: *user}, nil
+}
+
+func (root Root) ViewerQuery(
+	ctx context.Context,
+) (schema.UserInterface, error) {
+	id := auth.Viewer(ctx)
+
+	if id == nil {
+		return nil, nil
+	}
+
+	user, err := root.UserService.Find(user.UserID(string(*id)))
 	if err != nil {
 		return nil, err
 	}
