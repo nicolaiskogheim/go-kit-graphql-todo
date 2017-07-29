@@ -8,9 +8,28 @@ import (
 )
 
 type UserID string
+
+func (id UserID) ToString() string {
+	return string(id)
+}
+
 type UserName string
+
+func (name UserName) ToString() string {
+	return string(name)
+}
+
 type UserEmail string
+
+func (email UserEmail) ToString() string {
+	return string(email)
+}
+
 type UserPassword string
+
+func (password UserPassword) ToString() string {
+	return string(password)
+}
 
 type User struct {
 	ID       UserID       `json:"id"`
