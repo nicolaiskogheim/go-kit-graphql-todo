@@ -23,3 +23,9 @@ func (user User) NameField() (*string, error) {
 	name := string(user.source.Name)
 	return &name, nil
 }
+
+// NameField resolves the Name field on user.User
+func (user User) EmailField() (*string, error) {
+	email := string(user.source.Email)
+	return &email, nil
+}

@@ -8,6 +8,7 @@ type Todo {
 type User {
     id: ID!
     name: String!
+    email: String!
 }
 
 # Query todos and users
