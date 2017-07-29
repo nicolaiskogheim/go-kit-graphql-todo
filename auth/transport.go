@@ -38,7 +38,7 @@ func makeAuthEndpoint(s Service) endpoint.Endpoint {
 
 		cookie := http.Cookie{
 			Name:     "session",
-			Value:    token,
+			Value:    token.ToString(),
 			HttpOnly: true,
 		}
 

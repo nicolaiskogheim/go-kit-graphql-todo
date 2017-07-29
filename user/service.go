@@ -2,6 +2,8 @@ package user
 
 import (
 	"net/http"
+
+	"github.com/nicolaiskogheim/go-kit-graphql-todo/auth"
 )
 
 type Service interface {
@@ -9,7 +11,7 @@ type Service interface {
 	Remove(id UserID) error
 	Find(id UserID) (*User, error)
 	FindAll() []*User
-	Authenticate(req http.Request) (string, error)
+	Authenticate(req http.Request) (*auth.Identifier, error)
 }
 
 type service struct {
@@ -38,7 +40,7 @@ func (s *service) FindAll() []*User {
 	return s.repository.FindAll()
 }
 
-func (s *service) Authenticate(req http.Request) (string, error) {
+func (s *service) Authenticate(req http.Request) (*auth.Identifier, error) {
 
 	req.ParseForm()
 	password := req.Form.Get("password")
@@ -50,10 +52,11 @@ func (s *service) Authenticate(req http.Request) (string, error) {
 	)
 
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return string(user.ID), nil
+	identifier := auth.Identifier(user.ID.ToString())
+	return &identifier, nil
 }
 
 type UserRepository interface {

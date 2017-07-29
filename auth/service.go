@@ -25,7 +25,7 @@ type Service interface {
 }
 
 type Authenticatable interface {
-	Authenticate(req http.Request) (string, error)
+	Authenticate(req http.Request) (*Identifier, error)
 }
 
 type service struct {
