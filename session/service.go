@@ -30,10 +30,8 @@ func (s *service) Make(uid SessionUID, expires time.Time) (*SessionToken, error)
 	return &session.Token, nil
 }
 
-func (s *service) Get(token string) (*Session, error) {
-	// TODO(nicolaiskogheim): fetch Session from repo
-	// if no token, errTokenNotFound
-	session, err := s.repository.Find(SessionToken(token))
+func (s *service) Get(uid string) (*Session, error) {
+	session, err := s.repository.Find(SessionUID(uid))
 
 	if err != nil {
 		return nil, err
@@ -43,6 +41,6 @@ func (s *service) Get(token string) (*Session, error) {
 }
 
 type SessionRepository interface {
-	Find(uid SessionToken) (*Session, error)
+	Find(uid SessionUID) (*Session, error)
 	Store(s *Session) error
 }
