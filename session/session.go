@@ -37,5 +37,5 @@ func newToken() SessionToken {
 	return SessionToken(uuid.New())
 }
 
-// ErrUnknown is used when a todo could not be found.
+// ErrUnknown is used when a session could not be found.
 var ErrUnknown = errors.New("unknown session")
