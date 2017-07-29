@@ -80,7 +80,7 @@ func (r *userRepository) FindByCredentials(email user.UserEmail, password user.U
 		}
 	}
 
-	return nil, errors.New("Wrong username or password")
+	return nil, user.ErrUnknown
 }
 
 func NewUserRepository() user.UserRepository {

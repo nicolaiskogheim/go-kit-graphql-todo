@@ -1,6 +1,7 @@
 package user
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/auth"
@@ -50,6 +51,10 @@ func (s *service) Authenticate(req http.Request) (*auth.Identifier, error) {
 		UserEmail(email),
 		UserPassword(password),
 	)
+
+	if err == ErrUnknown {
+		return nil, errors.New("Wrong email or password")
+	}
 
 	if err != nil {
 		return nil, err
