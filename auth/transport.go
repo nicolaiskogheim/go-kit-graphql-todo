@@ -5,20 +5,26 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"time"
 
 	kithttp "github.com/go-kit/kit/transport/http"
 
 	"github.com/go-kit/kit/endpoint"
+	"github.com/go-kit/kit/log"
 )
 
-func MakeHandler(s Service) http.Handler {
+func MakeHandler(s Service, logger log.Logger) http.Handler {
 	opts := []kithttp.ServerOption{
+		kithttp.ServerErrorLogger(logger),
 		kithttp.ServerErrorEncoder(encodeError),
 	}
 
 	var authEndpoint endpoint.Endpoint
 	{
+		authLogger := log.With(logger, "method", "auth")
+
 		authEndpoint = makeAuthEndpoint(s)
+		authEndpoint = makeLoggingAuthEndpoint(authLogger)(authEndpoint)
 	}
 
 	authHandler := kithttp.NewServer(
@@ -43,6 +49,17 @@ func makeAuthEndpoint(s Service) endpoint.Endpoint {
 		}
 
 		return cookie, err
+	}
+}
+
+func makeLoggingAuthEndpoint(logger log.Logger) endpoint.Middleware {
+	return func(next endpoint.Endpoint) endpoint.Endpoint {
+		return func(ctx context.Context, request interface{}) (response interface{}, err error) {
+			defer func(begin time.Time) {
+				logger.Log("error", err, "took", time.Since(begin))
+			}(time.Now())
+			return next(ctx, request)
+		}
 	}
 }
 

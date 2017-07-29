@@ -139,7 +139,7 @@ func main() {
 	httpLogger := log.With(logger, "component", "http")
 
 	mux := http.NewServeMux()
-	mux.Handle("/auth", auth.MakeHandler(authService))
+	mux.Handle("/auth", auth.MakeHandler(authService, httpLogger))
 	mux.Handle("/graphql", graphql.MakeHandler(gqls, httpLogger,
 		kithttp.ServerBefore(authService.Authenticate)))
 	mux.Handle("/", http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
