@@ -1,6 +1,8 @@
 package models
 
 import (
+	"errors"
+
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/auth"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/schema"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/todo"
@@ -109,7 +111,14 @@ func (root Root) ToggleTodoMutation(
 	ctx context.Context,
 	id string,
 ) (schema.TodoInterface, error) {
-	todo, err := root.TodoService.Toggle(todo.TodoID(id))
+	uid := auth.Viewer(ctx)
+	user, err := root.UserService.Find(user.UserID(*uid))
+
+	if err != nil {
+		return nil, errors.New("user not found")
+	}
+
+	todo, err := root.TodoService.Toggle(*user, todo.TodoID(id))
 
 	if err != nil {
 		return nil, err

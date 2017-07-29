@@ -21,7 +21,7 @@ questions about anything, feel free to open issues or PR's.
 - [x] instrumenting (prometheus)
 - [ ] opentracing (with appdash)
 - [x] client authentication
-- [ ] authorisation somehow, somewhere
+- [ ] authorisation *(in progress)*
 - [ ] Proxying?
 - [ ] Load balancing?
 - [ ] Circuit breaking?

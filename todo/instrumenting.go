@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/go-kit/kit/metrics"
+	"github.com/nicolaiskogheim/go-kit-graphql-todo/user"
 )
 
 type instrumentingService struct {
@@ -29,13 +30,13 @@ func (s *instrumentingService) Add(t *Todo) error {
 	return s.Service.Add(t)
 }
 
-func (s *instrumentingService) Toggle(id TodoID) (*Todo, error) {
+func (s *instrumentingService) Toggle(user user.User, id TodoID) (*Todo, error) {
 	defer func(begin time.Time) {
 		s.requestCount.With("method", "toggle").Add(1)
 		s.requestLatency.With("method", "toggle").Observe(time.Since(begin).Seconds())
 	}(time.Now())
 
-	return s.Service.Toggle(id)
+	return s.Service.Toggle(user, id)
 }
 
 func (s *instrumentingService) Remove(id TodoID) (*Todo, error) {

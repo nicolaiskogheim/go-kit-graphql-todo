@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/go-kit/kit/log"
+	"github.com/nicolaiskogheim/go-kit-graphql-todo/user"
 )
 
 type loggingService struct {
@@ -33,7 +34,7 @@ func (s *loggingService) Add(t *Todo) (err error) {
 	return s.Service.Add(t)
 }
 
-func (s *loggingService) Toggle(id TodoID) (t *Todo, err error) {
+func (s *loggingService) Toggle(user user.User, id TodoID) (t *Todo, err error) {
 	defer func(begin time.Time) {
 		s.logger.Log(
 			"method", "toggle",
@@ -43,7 +44,7 @@ func (s *loggingService) Toggle(id TodoID) (t *Todo, err error) {
 		)
 	}(time.Now())
 
-	return s.Service.Toggle(id)
+	return s.Service.Toggle(user, id)
 }
 
 func (s *loggingService) Remove(id TodoID) (t *Todo, err error) {
