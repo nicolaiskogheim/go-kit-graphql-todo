@@ -78,18 +78,14 @@ func Viewer(ctx context.Context) *Identifier {
 		return nil
 	}
 
-	id, ok := val.(session.SessionUID)
+	uid, ok := val.(session.SessionUID)
 	if ok == false {
 		return nil
 	}
 
-	idfier := Identifier(id)
+	id := Identifier(uid)
 
-	if ok == false {
-		return nil
-	}
-
-	return &idfier
+	return &id
 }
 
 func NewService(session session.Service, authable Authenticatable) Service {
