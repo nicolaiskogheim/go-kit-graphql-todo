@@ -29,7 +29,7 @@ questions about anything, feel free to open issues or PR's.
 
 ### Roadmap otherwise
 - [x] Todos
-- [ ] Users
+- [x] Users
 - [ ] Login
 
 While I'm at it I want to try out a whole bunch of things. The `todo service`
