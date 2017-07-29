@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/session"
 )
 
@@ -47,11 +46,7 @@ func (s *service) Authenticate(ctx context.Context, request *http.Request) conte
 		return ctx
 	}
 
-	spew.Dump(sess)
-
-	authctx := context.WithValue(ctx, AuthContextID, sess.UID)
-
-	return authctx
+	return context.WithValue(ctx, AuthContextID, sess.UID)
 }
 
 func (s *service) Login(req *http.Request) (*session.SessionToken, error) {

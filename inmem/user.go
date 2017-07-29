@@ -1,7 +1,6 @@
 package inmem
 
 import (
-	"errors"
 	"sync"
 
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/user"
