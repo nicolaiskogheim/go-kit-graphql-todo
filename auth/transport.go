@@ -42,13 +42,17 @@ func makeAuthEndpoint(s Service) endpoint.Endpoint {
 		req := request.(*http.Request)
 		token, err := s.Login(req)
 
+		if err != nil {
+			return nil, err
+		}
+
 		cookie := http.Cookie{
 			Name:     "session",
 			Value:    token.ToString(),
 			HttpOnly: true,
 		}
 
-		return cookie, err
+		return cookie, nil
 	}
 }
 
