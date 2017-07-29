@@ -70,6 +70,28 @@ func (s *service) Login(req *http.Request) (*session.SessionToken, error) {
 	return token, nil
 }
 
+// Viewer returns the identifier of an authorized viewer
+// it returns nil if no viewer was found in the session
+func Viewer(ctx context.Context) *Identifier {
+	val := ctx.Value(AuthContextID)
+	if val == nil {
+		return nil
+	}
+
+	id, ok := val.(session.SessionUID)
+	if ok == false {
+		return nil
+	}
+
+	idfier := Identifier(id)
+
+	if ok == false {
+		return nil
+	}
+
+	return &idfier
+}
+
 func NewService(session session.Service, authable Authenticatable) Service {
 	return &service{
 		session:  session,
