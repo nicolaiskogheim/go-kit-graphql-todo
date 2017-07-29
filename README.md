@@ -20,7 +20,7 @@ questions about anything, feel free to open issues or PR's.
 - [x] logging (go-kit)
 - [x] instrumenting (prometheus)
 - [ ] opentracing (with appdash)
-- [ ] client authentication
+- [x] client authentication
 - [ ] authorisation somehow, somewhere
 - [ ] Proxying?
 - [ ] Load balancing?
@@ -30,7 +30,7 @@ questions about anything, feel free to open issues or PR's.
 ### Roadmap otherwise
 - [x] Todos
 - [x] Users
-- [ ] Login
+- [x] Login
 
 While I'm at it I want to try out a whole bunch of things. The `todo service`
 is exposed with graphql, but I want to expose it via a REST-ful api as well.
