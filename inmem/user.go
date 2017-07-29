@@ -68,13 +68,13 @@ func (r *userRepository) FindAll() []*user.User {
 	return users
 }
 
-func (r *userRepository) FindByCredentials(email, password string) (*user.User, error) {
+func (r *userRepository) FindByCredentials(email user.UserEmail, password user.UserPassword) (*user.User, error) {
 	r.mtx.RLock()
 	defer r.mtx.RUnlock()
 
 	for _, user := range r.users {
-		if string(user.Email) == email {
-			if string(user.Password) == password {
+		if user.Email == email {
+			if user.Password == password {
 				return user, nil
 			}
 		}

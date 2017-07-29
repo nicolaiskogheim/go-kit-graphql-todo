@@ -44,11 +44,11 @@ func (s *service) Authenticate(req http.Request) (*auth.Identifier, error) {
 
 	req.ParseForm()
 	password := req.Form.Get("password")
-	username := req.Form.Get("username")
+	email := req.Form.Get("email")
 
 	user, err := s.repository.FindByCredentials(
-		username,
-		password,
+		UserEmail(email),
+		UserPassword(password),
 	)
 
 	if err != nil {
@@ -65,5 +65,5 @@ type UserRepository interface {
 	Delete(id UserID) error
 	Find(id UserID) (*User, error)
 	FindAll() []*User
-	FindByCredentials(username, password string) (*User, error)
+	FindByCredentials(email UserEmail, password UserPassword) (*User, error)
 }
