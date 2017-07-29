@@ -1,6 +1,7 @@
 package inmem
 
 import (
+	"errors"
 	"sync"
 
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/user"
@@ -65,6 +66,21 @@ func (r *userRepository) FindAll() []*user.User {
 	}
 
 	return users
+}
+
+func (r *userRepository) FindByCredentials(email, password string) (*user.User, error) {
+	r.mtx.RLock()
+	defer r.mtx.RUnlock()
+
+	for _, user := range r.users {
+		if string(user.Email) == email {
+			if string(user.Password) == password {
+				return user, nil
+			}
+		}
+	}
+
+	return nil, errors.New("Wrong username or password")
 }
 
 func NewUserRepository() user.UserRepository {

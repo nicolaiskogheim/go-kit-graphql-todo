@@ -12,8 +12,10 @@ import (
 
 	"github.com/go-kit/kit/log"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
+	kithttp "github.com/go-kit/kit/transport/http"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 
+	"github.com/nicolaiskogheim/go-kit-graphql-todo/auth"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/graphql"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/inmem"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/models"
@@ -102,6 +104,11 @@ func main() {
 	}
 	_ = sessionService
 
+	var authService auth.Service
+	{
+		authService = auth.NewService(sessionService, userService)
+	}
+
 	var gqls graphql.Service
 	{
 		root := models.Root{TodoService: todoService, UserService: userService}
@@ -132,7 +139,9 @@ func main() {
 	httpLogger := log.With(logger, "component", "http")
 
 	mux := http.NewServeMux()
-	mux.Handle("/graphql", graphql.MakeHandler(gqls, httpLogger))
+	mux.Handle("/auth", auth.MakeHandler(authService))
+	mux.Handle("/graphql", graphql.MakeHandler(gqls, httpLogger,
+		kithttp.ServerBefore(authService.Authenticate)))
 	mux.Handle("/", http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		rw.Write(graphiql)
 	}))

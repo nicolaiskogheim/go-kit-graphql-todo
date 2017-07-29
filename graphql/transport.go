@@ -15,11 +15,13 @@ import (
 	"context"
 )
 
-func MakeHandler(gqs Service, logger log.Logger) http.Handler {
+func MakeHandler(gqs Service, logger log.Logger, serveropts ...kithttp.ServerOption) http.Handler {
 	opts := []kithttp.ServerOption{
 		kithttp.ServerErrorLogger(logger),
 		kithttp.ServerErrorEncoder(encodeError),
 	}
+
+	opts = append(opts, serveropts...)
 
 	var graphqlEndpoint endpoint.Endpoint
 	{
