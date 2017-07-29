@@ -2,7 +2,6 @@ package inmem
 
 import (
 	"sync"
-	"time"
 
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/session"
 )
@@ -33,14 +32,11 @@ func (r *sessionRepository) Find(token session.SessionToken) (*session.Session, 
 }
 
 func NewSessionRepository() session.SessionRepository {
-	dummy := make(map[session.SessionToken]*session.Session)
-
-	dummy["a282e4ca-b74a-4f51-a27d-28bbf6287729"] = session.New(
-		"2C2E7C8D", time.Now())
-
 	r := &sessionRepository{
-		sessions: dummy,
+		sessions: make(map[session.SessionToken]*session.Session),
 	}
+
+	r.sessions[session.Session1.Token] = session.Session1
 
 	return r
 }
