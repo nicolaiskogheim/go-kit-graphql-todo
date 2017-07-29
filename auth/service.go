@@ -21,7 +21,7 @@ func (id ContextKey) ToInt() int {
 
 type Service interface {
 	Authenticate(ctx context.Context, request *http.Request) context.Context
-	Login(req *http.Request) (string, error)
+	Login(req *http.Request) (*session.SessionToken, error)
 }
 
 type Authenticatable interface {
@@ -54,14 +54,14 @@ func (s *service) Authenticate(ctx context.Context, request *http.Request) conte
 	return authctx
 }
 
-func (s *service) Login(req *http.Request) (string, error) {
+func (s *service) Login(req *http.Request) (*session.SessionToken, error) {
 	id, err := s.authable.Authenticate(*req)
 
-	if err != nil {
-		return "", err
+	if err != nil || id == nil {
+		return nil, err
 	}
 
-	token, err := s.session.Make(session.SessionUID(id), time.Date(
+	token, err := s.session.Make(session.SessionUID(id.ToString()), time.Date(
 		time.Now().Year()+1,
 		time.January,
 		0, 0, 0, 0, 0,
@@ -69,10 +69,10 @@ func (s *service) Login(req *http.Request) (string, error) {
 	)
 
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return token.ToString(), nil
+	return token, nil
 }
 
 func NewService(session session.Service, authable Authenticatable) Service {
