@@ -13,12 +13,14 @@ import (
 	"github.com/go-kit/kit/log"
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	kithttp "github.com/go-kit/kit/transport/http"
+	goredis "github.com/go-redis/redis"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/auth"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/graphql"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/inmem"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/models"
+	"github.com/nicolaiskogheim/go-kit-graphql-todo/redis"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/schema"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/session"
 	"github.com/nicolaiskogheim/go-kit-graphql-todo/todo"
@@ -48,10 +50,16 @@ func main() {
 		)
 	}
 
+	redisClient := goredis.NewClient(&goredis.Options{
+		Addr:     "localhost:6379",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+
 	var (
 		todos    = inmem.NewTodoRepository()
 		users    = inmem.NewUserRepository()
-		sessions = inmem.NewSessionRepository()
+		sessions = redis.NewSessionRepository(*redisClient)
 	)
 
 	fieldKeys := []string{"method"}
