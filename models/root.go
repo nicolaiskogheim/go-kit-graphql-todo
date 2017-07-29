@@ -164,7 +164,7 @@ func (root Root) ViewerQuery(
 		return nil, nil
 	}
 
-	user, err := root.UserService.Find(user.UserID(string(*id)))
+	user, err := root.UserService.Find(user.UserID(id.ToString()))
 	if err != nil {
 		return nil, err
 	}
