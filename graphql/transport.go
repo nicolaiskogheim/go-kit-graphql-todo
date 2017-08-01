@@ -84,8 +84,8 @@ func encodeResponse(ctx context.Context, rw http.ResponseWriter, response interf
 		encodeError(ctx, e.error(), rw)
 		return nil
 	}
-	rw.WriteHeader(http.StatusOK)
 	rw.Header().Set("Content-Type", "application/json; charset=utf-8")
+	rw.WriteHeader(http.StatusOK)
 	return json.NewEncoder(rw).Encode(response)
 }
 
@@ -94,10 +94,10 @@ type errorer interface {
 }
 
 func encodeError(_ context.Context, err error, rw http.ResponseWriter) {
+	rw.Header().Set("Content-Type", "application/json; charset= utf-8")
 	// TODO(nicolai): We should be able to be more granular here.
 	// Everything isn't an internal server error.
 	rw.WriteHeader(http.StatusInternalServerError)
-	rw.Header().Set("Content-Type", "application/json; charset= utf-8")
 	json.NewEncoder(rw).Encode(map[string]interface{}{
 		"error": err.Error(),
 	})
